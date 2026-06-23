@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Security Management System</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- ── Header ── -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <span class="shield">🛡</span>
+                <div>
+                    <h1>CSMS</h1>
+                    <p>Cyber Security Management System</p>
+                </div>
+            </div>
+            <div class="session-bar" id="sessionBar">
+                <span id="sessionText">Not logged in</span>
+                <button class="btn btn-outline" id="logoutBtn" onclick="logout()" style="display:none">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ── Main Layout ── -->
+    <div class="container">
+
+        <!-- ── Sidebar ── -->
+        <aside class="sidebar">
+            <nav>
+                <div class="nav-section">
+                    <p class="nav-label">Account</p>
+                    <button class="nav-btn active" onclick="showPanel('auth')">🔐 Authentication</button>
+                    <button class="nav-btn" onclick="showPanel('password')">🔑 Password Checker</button>
+                </div>
+                <div class="nav-section">
+                    <p class="nav-label">File Manager</p>
+                    <button class="nav-btn" onclick="showPanel('encrypt')">🔒 Encrypt File</button>
+                    <button class="nav-btn" onclick="showPanel('decrypt')">🔓 Decrypt File</button>
+                    <button class="nav-btn" onclick="showPanel('integrity')">✅ Check Integrity</button>
+                    <button class="nav-btn" onclick="showPanel('files')">📁 List Files</button>
+                    <button class="nav-btn" onclick="showPanel('view')">👁 View File</button>
+                    <button class="nav-btn" onclick="showPanel('edit')">✏️ Edit File</button>
+                </div>
+                <div class="nav-section" id="adminNav" style="display:none">
+                    <p class="nav-label">Admin Panel</p>
+                    <button class="nav-btn" onclick="showPanel('admin')">⚙️ Admin Panel</button>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- ── Main Content ── -->
+        <main class="main-content">
+
+            <!-- Output Box -->
+            <div class="output-box" id="outputBox">
+                <div class="output-header">
+                    <span>System Output</span>
+                    <button onclick="clearOutput()" class="btn-clear">Clear</button>
+                </div>
+                <pre id="outputText">Welcome to CSMS. Please log in or register to get started.</pre>
+            </div>
+
+            <!-- ── Auth Panel ── -->
+            <div class="panel active" id="panel-auth">
+                <h2>Authentication</h2>
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('login')">Login</button>
+                    <button class="tab" onclick="switchTab('register')">Register</button>
+                </div>
+
+                <div id="tab-login">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="loginUser" placeholder="Enter username">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPass" placeholder="Enter password">
+                    </div>
+                    <button class="btn btn-primary" onclick="login()">Login</button>
+                </div>
+
+                <div id="tab-register" style="display:none">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="regUser" placeholder="Enter username">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="regPass" placeholder="Min 8 chars, letters + numbers">
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="regAdmin">
+                        <label for="regAdmin">Register as Admin</label>
+                    </div>
+                    <button class="btn btn-primary" onclick="register()">Register</button>
+                </div>
+            </div>
+
+            <!-- ── Password Checker Panel ── -->
+            <div class="panel" id="panel-password">
+                <h2>Password Strength Checker</h2>
+                <div class="form-group">
+                    <label>Enter Password to Check</label>
+                    <input type="text" id="pwdCheck" placeholder="Type a password...">
+                </div>
+                <button class="btn btn-primary" onclick="checkPassword()">Check Strength</button>
+                <div class="strength-meter" id="strengthMeter" style="display:none">
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                    <p id="strengthLabel"></p>
+                </div>
+            </div>
+
+            <!-- ── Encrypt Panel ── -->
+            <div class="panel" id="panel-encrypt">
+                <h2>Encrypt a File</h2>
+                <div class="form-group">
+                    <label>Filename (e.g. secret.txt)</label>
+                    <input type="text" id="encFilename" placeholder="Enter filename">
+                </div>
+                <div class="form-group">
+                    <label>File Content (leave empty if file already exists)</label>
+                    <textarea id="encContent" rows="6" placeholder="Enter content here or leave empty..."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="encryptFile()">🔒 Encrypt</button>
+            </div>
+
+            <!-- ── Decrypt Panel ── -->
+            <div class="panel" id="panel-decrypt">
+                <h2>Decrypt a File</h2>
+                <div class="form-group">
+                    <label>Filename</label>
+                    <input type="text" id="decFilename" placeholder="Enter filename">
+                </div>
+                <button class="btn btn-primary" onclick="decryptFile()">🔓 Decrypt</button>
+            </div>
+
+            <!-- ── Integrity Panel ── -->
+            <div class="panel" id="panel-integrity">
+                <h2>Check File Integrity</h2>
+                <div class="form-group">
+                    <label>Filename</label>
+                    <input type="text" id="intFilename" placeholder="Enter filename">
+                </div>
+                <button class="btn btn-primary" onclick="checkIntegrity()">✅ Check Integrity</button>
+            </div>
+
+            <!-- ── List Files Panel ── -->
+            <div class="panel" id="panel-files">
+                <h2>Tracked Files</h2>
+                <button class="btn btn-primary" onclick="listFiles()">📁 Refresh File List</button>
+                <div id="filesList" class="files-list"></div>
+            </div>
+
+            <!-- ── View File Panel ── -->
+            <div class="panel" id="panel-view">
+                <h2>View File Contents</h2>
+                <div class="form-group">
+                    <label>Filename</label>
+                    <input type="text" id="viewFilename" placeholder="Enter filename">
+                </div>
+                <button class="btn btn-primary" onclick="viewFile()">👁 View</button>
+            </div>
+
+            <!-- ── Edit File Panel ── -->
+            <div class="panel" id="panel-edit">
+                <h2>Edit File Contents</h2>
+                <div class="form-group">
+                    <label>Filename</label>
+                    <input type="text" id="editFilename" placeholder="Enter filename">
+                </div>
+                <div class="form-group">
+                    <label>New Content</label>
+                    <textarea id="editContent" rows="6" placeholder="Enter new content..."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="editFile()">💾 Save Changes</button>
+            </div>
+
+            <!-- ── Admin Panel ── -->
+            <div class="panel" id="panel-admin">
+                <h2>⚙️ Admin Panel</h2>
+                <div class="admin-grid">
+                    <div class="admin-card">
+                        <h3>👥 Users</h3>
+                        <p>View all registered users and their status</p>
+                        <button class="btn btn-secondary" onclick="adminAction('users')">View Users</button>
+                    </div>
+                    <div class="admin-card">
+                        <h3>📋 System Logs</h3>
+                        <p>View all system activity logs</p>
+                        <button class="btn btn-secondary" onclick="adminAction('logs')">View Logs</button>
+                    </div>
+                    <div class="admin-card">
+                        <h3>📁 Tracked Files</h3>
+                        <p>View all files managed by the system</p>
+                        <button class="btn btn-secondary" onclick="adminAction('files')">View Files</button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        let currentUser = "{{ user }}";
+        let isAdmin = {{ 'true' if is_admin else 'false' }};
+
+        // ── Panel switching ──
+        function showPanel(name) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + name).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function switchTab(tab) {
+            document.getElementById('tab-login').style.display = tab === 'login' ? 'block' : 'none';
+            document.getElementById('tab-register').style.display = tab === 'register' ? 'block' : 'none';
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // ── Output ──
+        function setOutput(msg, success = null) {
+            const box = document.getElementById('outputText');
+            box.textContent = msg;
+            box.className = success === true ? 'success' : success === false ? 'error' : '';
+        }
+
+        function clearOutput() {
+            document.getElementById('outputText').textContent = '';
+            document.getElementById('outputText').className = '';
+        }
+
+        // ── Session UI ──
+        function updateSessionUI() {
+            const bar = document.getElementById('sessionText');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const adminNav = document.getElementById('adminNav');
+
+            if (currentUser) {
+                bar.textContent = `Logged in as ${currentUser} [${isAdmin ? 'Admin' : 'User'}]`;
+                logoutBtn.style.display = 'inline-block';
+                adminNav.style.display = isAdmin ? 'block' : 'none';
+            } else {
+                bar.textContent = 'Not logged in';
+                logoutBtn.style.display = 'none';
+                adminNav.style.display = 'none';
+            }
+        }
+
+        // ── Auth ──
+        async function register() {
+            const username = document.getElementById('regUser').value.trim();
+            const password = document.getElementById('regPass').value.trim();
+            const admin = document.getElementById('regAdmin').checked;
+            if (!username || !password) return setOutput('Please fill in all fields.', false);
+
+            const res = await fetch('/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username, password, is_admin: admin})
+            });
+            const data = await res.json();
+            setOutput(data.message, data.success);
+        }
+
+        async function login() {
+            const username = document.getElementById('loginUser').value.trim();
+            const password = document.getElementById('loginPass').value.trim();
+            if (!username || !password) return setOutput('Please fill in all fields.', false);
+
+            const res = await fetch('/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username, password})
+            });
+            const data = await res.json();
+            if (data.success) {
+                currentUser = data.user;
+                isAdmin = data.is_admin;
+                updateSessionUI();
+            }
+            setOutput(data.message, data.success);
+        }
+
+        async function logout() {
+            await fetch('/logout', {method: 'POST'});
+            currentUser = '';
+            isAdmin = false;
+            updateSessionUI();
+            setOutput('Logged out successfully.');
+        }
+
+        // ── File Manager ──
+        async function encryptFile() {
+            const filename = document.getElementById('encFilename').value.trim();
+            const content = document.getElementById('encContent').value.trim();
+            if (!filename) return setOutput('Please enter a filename.', false);
+
+            const res = await fetch('/encrypt', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({filename, content})
+            });
+            const data = await res.json();
+            setOutput(data.message, data.success);
+        }
+
+        async function decryptFile() {
+            const filename = document.getElementById('decFilename').value.trim();
+            if (!filename) return setOutput('Please enter a filename.', false);
+
+            const res = await fetch('/decrypt', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({filename})
+            });
+            const data = await res.json();
+            setOutput(data.message, data.success);
+        }
+
+        async function checkIntegrity() {
+            const filename = document.getElementById('intFilename').value.trim();
+            if (!filename) return setOutput('Please enter a filename.', false);
+
+            const res = await fetch('/integrity', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({filename})
+            });
+            const data = await res.json();
+            setOutput(data.message, data.success);
+        }
+
+        async function listFiles() {
+            const res = await fetch('/list_files');
+            const data = await res.json();
+            setOutput(data.message);
+        }
+
+        async function viewFile() {
+            const filename = document.getElementById('viewFilename').value.trim();
+            if (!filename) return setOutput('Please enter a filename.', false);
+
+            const res = await fetch('/view_file', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({filename})
+            });
+            const data = await res.json();
+            setOutput(data.message);
+        }
+
+        // ── Password Checker ──
+        async function checkPassword() {
+            const password = document.getElementById('pwdCheck').value.trim();
+            if (!password) return setOutput('Please enter a password.', false);
+
+            const res = await fetch('/check_password', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({password})
+            });
+            const data = await res.json();
+            setOutput(data.message);
+
+            // Show strength meter
+            const meter = document.getElementById('strengthMeter');
+            const fill = document.getElementById('strengthFill');
+            const label = document.getElementById('strengthLabel');
+            meter.style.display = 'block';
+
+            if (data.message.includes('WEAK')) {
+                fill.style.width = '30%'; fill.style.background = '#e74c3c';
+                label.textContent = '⚠️ Weak Password';
+            } else if (data.message.includes('MODERATE')) {
+                fill.style.width = '65%'; fill.style.background = '#f39c12';
+                label.textContent = '⚡ Moderate Password';
+            } else if (data.message.includes('STRONG')) {
+                fill.style.width = '100%'; fill.style.background = '#2ecc71';
+                label.textContent = '✅ Strong Password';
+            }
+        }
+
+        // ── Admin ──
+        async function adminAction(action) {
+            const endpoints = {users: '/get_users', logs: '/get_logs', files: '/list_files'};
+            const res = await fetch(endpoints[action]);
+            const data = await res.json();
+            setOutput(data.message);
+        }
+
+        async function editFile() {
+            const filename = document.getElementById("editFilename").value.trim();
+            const content  = document.getElementById("editContent").value.trim();
+            if (!filename) return setOutput("Please enter a filename.", false);
+            if (!content)  return setOutput("Please enter new content.", false);
+            const res = await fetch("/edit_file", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({filename, content})
+            });
+            const data = await res.json();
+            setOutput(data.message, data.success);
+        }
+
+        // Init
+        updateSessionUI();
+    </script>
+</body>
+</html>
