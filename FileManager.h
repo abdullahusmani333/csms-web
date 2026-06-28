@@ -7,35 +7,22 @@
 #include <vector>
 using namespace std;
 
-// ─────────────────────────────────────────────
 //  STRUCT: FileRecord
-//  Stores metadata about a managed file.
-//  A struct is like a simple class — all members
-//  are public by default. Good for plain data.
-// ─────────────────────────────────────────────
 struct FileRecord {
     string filename;
     string storedHash;      // hash taken BEFORE encryption (to verify integrity later)
     bool isEncrypted;
 
-    // ── NEW OOP CONCEPT: Operator Overloading ──
-    // We're teaching the << operator how to print a FileRecord.
-    // Instead of: cout << record.filename << record.isEncrypted ...
-    // We can write: cout << record
+    // Operator Overloading 
     friend ostream& operator<<(ostream& os, const FileRecord& r);
 };
 
 
-// ─────────────────────────────────────────────
 //  CLASS: FileManager
-//
 //  COMPOSITION: FileManager HAS-A Logger
 //                            HAS-A Encryption*
 //
-//  It REUSES our existing Encryption classes —
-//  no need to rewrite XORCipher or CaesarCipher.
-//  This is the payoff of polymorphism from Module 1.
-// ─────────────────────────────────────────────
+//  It REUSES our existing Encryption classes
 class FileManager {
 private:
     Encryption* cipher;         // reusing our existing encryption (polymorphism!)
