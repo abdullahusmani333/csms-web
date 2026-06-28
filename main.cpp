@@ -1,7 +1,6 @@
-// ════════════════════════════════════════════════
 //  main.cpp  —  Cyber Security Management System
 //  Module 5: Final Main Menu
-// ════════════════════════════════════════════════
+
 #include <iostream>
 #include <string>
 #include "AuthSystem.h"
