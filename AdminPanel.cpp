@@ -1,17 +1,13 @@
-// ════════════════════════════════════════════════
 //  AdminPanel.cpp
-// ════════════════════════════════════════════════
+
 #include "AdminPanel.h"
 #include <iostream>
 using namespace std;
 
 // ── Static member definitions ──
-// Static members must be defined OUTSIDE the class body.
-// This is where the actual memory is allocated for them.
 string AdminPanel::currentUser = "";
 bool AdminPanel::currentUserIsAdmin = false;
 
-// ── Constructor ──
 AdminPanel::AdminPanel(AuthSystem& authRef, FileManager& fmRef)
     : auth(authRef), fm(fmRef), logger("logs.txt", true) {}
 
@@ -38,7 +34,6 @@ bool AdminPanel::isAdminLoggedIn() {
 }
 
 // ── Guard: prints error and returns false if not admin ──
-// Used at the top of every admin-only method
 static bool requireAdmin() {
     if (!AdminPanel::isAdminLoggedIn()) {
         cout << "  [X] Access denied. Please log in as Admin first.\n";
