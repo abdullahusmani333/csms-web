@@ -1,6 +1,4 @@
-// ════════════════════════════════════════════════
 //  User.cpp  —  Base class implementation
-// ════════════════════════════════════════════════
 #include "User.h"
 #include <iostream>
 using namespace std;
@@ -35,16 +33,14 @@ void User::displayRole() const {
 }
 
 
-// ════════════════════════════════════════════════
-//  DerivedUsers.cpp  —  RegularUser & Admin
-// ════════════════════════════════════════════════
+//  Derivedusers.cpp  —  RegularUser & Admin
 #include "Derivedusers.h"
 #include <iostream>
 using namespace std;
 
 // ── RegularUser ──
 RegularUser::RegularUser(string uname, string encPwd)
-    : User(uname, encPwd) {}   // pass args up to base class constructor
+    : User(uname, encPwd) {}   // passes arguments up to base class constructor
 
 void RegularUser::displayRole() const {
     cout << "[Regular User] " << username << endl;
@@ -61,9 +57,7 @@ void Admin::displayRole() const {
 bool Admin::getCanDeleteUsers() const { return canDeleteUsers; }
 
 
-// ════════════════════════════════════════════════
 //  Encryption.cpp  —  XORCipher & CaesarCipher
-// ════════════════════════════════════════════════
 #include "Encryption.h"
 
 // ── XORCipher ──
@@ -109,9 +103,7 @@ string CaesarCipher::decrypt(const string& text) const {
 }
 
 
-// ════════════════════════════════════════════════
 //  AuthSystem.cpp  —  Core authentication logic
-// ════════════════════════════════════════════════
 #include "AuthSystem.h"
 #include "Derivedusers.h"
 #include <iostream>
@@ -129,12 +121,12 @@ AuthSystem::AuthSystem(Encryption* enc, string filename)
 }
 
 AuthSystem::~AuthSystem() {
-    // Free each User object from memory
+    // Frees each User object from memory
     for (User* u : users) delete u;
     // Note: cipher is created outside and deleted by the caller
 }
 
-// ── Find a user by username (private helper) ──
+// ── Finds a user by username (private helper) ──
 User* AuthSystem::findUser(const string& username) {
     for (User* u : users) {
         if (u->getUsername() == username) return u;
@@ -142,7 +134,7 @@ User* AuthSystem::findUser(const string& username) {
     return nullptr;  // not found
 }
 
-// ── Register a new user ──
+// ── Registers a new user ──
 bool AuthSystem::registerUser(const string& username, const string& password, bool isAdmin) {
     if (findUser(username)) {
         cout << "  [!] Username already exists.\n";
@@ -211,7 +203,7 @@ int AuthSystem::loginUser(const string& username, const string& password) {
     }
 }
 
-// ── Display all users (Admin feature) ──
+// ── Displays all users (Admin feature) ──
 void AuthSystem::displayAllUsers() const {
     cout << "\n  ── Registered Users ──\n";
     for (User* u : users) {
@@ -220,7 +212,7 @@ void AuthSystem::displayAllUsers() const {
     }
 }
 
-// ── Display logs (delegates to Logger) ──
+// ── Displays logs (delegates to Logger) ──
 void AuthSystem::displayLogs() const {
     logger.displayLogs();
 }
@@ -236,11 +228,10 @@ bool AuthSystem::isStrongPassword(const string& password) {
     return hasLetter && hasDigit;
 }
 
-// ── Save users to file ──
+// ── Saves users to file ──
 void AuthSystem::saveUsers() {
     ofstream file(dbFile);
     for (User* u : users) {
-        // Format: username|encryptedPassword|isAdmin|failedAttempts|isLocked
         bool isAdmin = (dynamic_cast<Admin*>(u) != nullptr);
         file << u->getUsername() << "|"
              << u->getEncryptedPassword() << "|"
@@ -250,10 +241,10 @@ void AuthSystem::saveUsers() {
     }
 }
 
-// ── Load users from file ──
+// ── Loads users from file ──
 void AuthSystem::loadUsers() {
     ifstream file(dbFile);
-    if (!file.is_open()) return;  // no file yet, that's fine
+    if (!file.is_open()) return;  // no file yet
 
     string line;
     while (getline(file, line)) {
