@@ -1,6 +1,4 @@
-// ════════════════════════════════════════════════
 //  Logger.cpp  —  Logger implementation
-// ════════════════════════════════════════════════
 #include "Logger.h"
 #include <iostream>
 #include <fstream>
@@ -10,7 +8,7 @@ using namespace std;
 Logger::Logger(string filename, bool printToConsole)
     : logFile(filename), consoleOutput(printToConsole) {}
 
-// ── Convert enum to readable label ──
+// ── Converts enum to readable label ──
 string Logger::levelToString(LogLevel level) const {
     switch (level) {
         case LogLevel::INFO:     return "INFO    ";
@@ -20,12 +18,12 @@ string Logger::levelToString(LogLevel level) const {
     }
 }
 
-// ── Get current date and time ──
+// ── Gets current date and time ──
 string Logger::getCurrentTimestamp() const {
-    time_t now = time(0);        // get current time as seconds since 1970
-    tm* ltm = localtime(&now);   // convert to local time struct
+    time_t now = time(0);        // gets current time as seconds since 1970
+    tm* ltm = localtime(&now);   // converts to local time struct
 
-    // Build a formatted string: YYYY-MM-DD HH:MM:SS
+    // Builds a formatted string: YYYY-MM-DD HH:MM:SS
     char buffer[20];
     strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", ltm);
     return string(buffer);
@@ -33,7 +31,7 @@ string Logger::getCurrentTimestamp() const {
 
 // ── Core log method ──
 void Logger::log(LogLevel level, const string& event, const string& username) {
-    // Build the log entry string
+    // Builds the log entry string
     string entry = "[" + getCurrentTimestamp() + "] "
                  + "[" + levelToString(level) + "] ";
 
@@ -42,12 +40,12 @@ void Logger::log(LogLevel level, const string& event, const string& username) {
 
     entry += event;
 
-    // Write to file (append mode — don't overwrite old logs)
+    // Writes to file (append mode — doesn't overwrite old logs)
     ofstream file(logFile, ios::app);
     if (file.is_open())
         file << entry << "\n";
 
-    // Also print to console if enabled
+    // Also prints to console if enabled
     if (consoleOutput)
         cout << "  LOG: " << entry << "\n";
 }
