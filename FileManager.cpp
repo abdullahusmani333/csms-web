@@ -1,13 +1,12 @@
-// ════════════════════════════════════════════════
 //  FileManager.cpp
-// ════════════════════════════════════════════════
+
 #include "FileManager.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 using namespace std;
 
-// ── Operator overload: how to print a FileRecord ──
+// ── Operator overload
 ostream& operator<<(ostream& os, const FileRecord& r) {
     os << "  File:      " << r.filename << "\n"
        << "  Encrypted: " << (r.isEncrypted ? "Yes" : "No") << "\n"
@@ -15,13 +14,12 @@ ostream& operator<<(ostream& os, const FileRecord& r) {
     return os;
 }
 
-// ── Constructor ──
 FileManager::FileManager(Encryption* enc, string recFile)
     : cipher(enc), logger("logs.txt", true), recordFile(recFile) {
     loadRecords();
 }
 
-// ── Read entire file into a string ──
+// ── Reads entire file into a string ──
 string FileManager::readFile(const string& filename) const {
     ifstream file(filename);
     if (!file.is_open()) return "";
@@ -30,27 +28,25 @@ string FileManager::readFile(const string& filename) const {
                    istreambuf_iterator<char>());
 }
 
-// ── Write a string into a file ──
+// ── Writes a string into a file ──
 void FileManager::writeFile(const string& filename, const string& content) const {
     ofstream file(filename);
     file << content;
 }
 
 // ── Simple hash: sum of (char value * position) ──
-// Not cryptographic — just enough to detect tampering.
-// Real systems use SHA-256 etc., but this demonstrates the concept.
 string FileManager::computeHash(const string& content) const {
     unsigned long hash = 0;
     for (size_t i = 0; i < content.size(); i++) {
         hash += (unsigned char)content[i] * (i + 1);
     }
-    // Convert to hex string
+    // Converts to hex string
     stringstream ss;
     ss << hex << hash;
     return ss.str();
 }
 
-// ── Find a record by filename ──
+// ── Finds a record by filename ──
 FileRecord* FileManager::findRecord(const string& filename) {
     for (FileRecord& r : records) {
         if (r.filename == filename) return &r;
@@ -58,7 +54,7 @@ FileRecord* FileManager::findRecord(const string& filename) {
     return nullptr;
 }
 
-// ── Persist records to file ──
+// ── Persists records to file ──
 void FileManager::saveRecords() const {
     ofstream file(recordFile);
     for (const FileRecord& r : records) {
@@ -66,7 +62,7 @@ void FileManager::saveRecords() const {
     }
 }
 
-// ── Load records from file ──
+// ── Loads records from file ──
 void FileManager::loadRecords() {
     ifstream file(recordFile);
     if (!file.is_open()) return;
@@ -83,7 +79,7 @@ void FileManager::loadRecords() {
     }
 }
 
-// ── Encrypt a file ──
+// ── Encrypts a file ──
 bool FileManager::encryptFile(const string& filename) {
     FileRecord* existing = findRecord(filename);
     if (existing && existing->isEncrypted) {
@@ -93,13 +89,13 @@ bool FileManager::encryptFile(const string& filename) {
 
     string content = readFile(filename);
     if (content.empty()) {
-        // File doesn't exist — offer to create it
+        // File doesn't exist — offers to create it
         cout << "  [!] File not found: " << filename << "\n";
         cout << "  [?] Would you like to create it? (1=Yes, 0=No): ";
         int create; cin >> create;
         if (create != 1) return false;
 
-        // Read content line by line until user types END on its own line
+        // Reads content line by line until user types END on its own line
         cout << "  [>] Enter file content (type END on a new line when done):\n";
         cin.ignore();
         string line, allContent;
@@ -116,7 +112,7 @@ bool FileManager::encryptFile(const string& filename) {
         content = allContent;
     }
 
-    // Store hash of ORIGINAL content before encrypting
+    // Stores hash of ORIGINAL content before encrypting
     string hash = computeHash(content);
     string encrypted = cipher->encrypt(content);  // POLYMORPHISM: works for XOR or Caesar
     writeFile(filename, encrypted);
@@ -139,7 +135,7 @@ bool FileManager::encryptFile(const string& filename) {
     return true;
 }
 
-// ── Decrypt a file ──
+// ── Decrypts a file ──
 bool FileManager::decryptFile(const string& filename) {
     FileRecord* record = findRecord(filename);
     if (!record || !record->isEncrypted) {
@@ -172,7 +168,7 @@ bool FileManager::checkIntegrity(const string& filename) {
     }
 
     // To check integrity we need the plain content.
-    // If encrypted, decrypt temporarily in memory (don't write to disk).
+    // If encrypted, decrypt temporarily in memory
     string content = readFile(filename);
     if (content.empty()) {
         cout << "  [!] File not found: " << filename << "\n";
@@ -195,7 +191,7 @@ bool FileManager::checkIntegrity(const string& filename) {
     }
 }
 
-// ── List all tracked files ──
+// ── Lists all tracked files ──
 void FileManager::listFiles() const {
     if (records.empty()) {
         cout << "  [!] No files tracked yet.\n";
@@ -208,7 +204,7 @@ void FileManager::listFiles() const {
     }
 }
 
-// ── View file contents ──
+// ── Views file contents ──
 void FileManager::viewFile(const string& filename) {
     FileRecord* record = findRecord(filename);
     string content = readFile(filename);
@@ -230,7 +226,7 @@ void FileManager::viewFile(const string& filename) {
     logger.logInfo("File viewed", filename);
 }
 
-// ── Edit file contents ──
+// ── Edits file contents ──
 void FileManager::editFile(const string& filename) {
     FileRecord* record = findRecord(filename);
     string content = readFile(filename);
@@ -240,7 +236,7 @@ void FileManager::editFile(const string& filename) {
         return;
     }
 
-    // Show current contents first (decrypted if needed)
+    // Shows current contents first (decrypted if needed)
     string current = (record && record->isEncrypted)
                      ? cipher->decrypt(content)
                      : content;
@@ -249,7 +245,7 @@ void FileManager::editFile(const string& filename) {
     cout << current;
     cout << "  ────────────────────────────────\n";
 
-    // Get new content
+    // Gets new content
     cout << "  [>] Enter new content (type END on a new line when done):\n";
     cin.ignore();
     string line, newContent;
@@ -263,7 +259,7 @@ void FileManager::editFile(const string& filename) {
         return;
     }
 
-    // If file was encrypted, re-encrypt the new content
+    // If file was encrypted, this will re-encrypt the new content
     if (record && record->isEncrypted) {
         string newHash = computeHash(newContent);
         string encrypted = cipher->encrypt(newContent);
