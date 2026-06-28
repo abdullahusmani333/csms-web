@@ -7,32 +7,22 @@
 #include <vector>
 using namespace std;
 
-// ─────────────────────────────────────────────
 //  CLASS: AuthSystem
 //  The brain of the authentication module.
-//  Handles: registration, login, lockouts,
-//  saving/loading users from a file.
-//
-//  COMPOSITION: AuthSystem HAS-A Logger.
-//  Logger is a member object — not a parent class.
-// ─────────────────────────────────────────────
 class AuthSystem {
 private:
     vector<User*> users;       // list of all registered users (pointers for polymorphism)
     Encryption* cipher;        // the encryption method to use (XOR or Caesar)
     string dbFile;             // filename used as our "database"
-    Logger logger;             // COMPOSITION: Logger lives inside AuthSystem
+    Logger logger;             
 
-    // Internal helpers (private — not for outside use)
     User* findUser(const string& username);
-    void saveUsers();           // write all users to file
-    void loadUsers();           // read all users from file on startup
+    void saveUsers();           // writes all users to file
+    void loadUsers();           // reads all users from file on startup
 
 public:
-    // Constructor: sets up the system with a chosen cipher and file
     AuthSystem(Encryption* enc, string filename = "users.txt");
 
-    // Destructor: frees memory (important for pointers!)
     ~AuthSystem();
 
     // Core features
