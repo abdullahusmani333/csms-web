@@ -4,13 +4,11 @@
 #include <string>
 using namespace std;
 
-// ─────────────────────────────────────────────
 //  ENUM: LogLevel
 //  Defines the "severity" of a log entry.
 //  INFO = normal activity
 //  WARNING = suspicious (e.g. wrong password)
 //  CRITICAL = serious (e.g. account locked)
-// ─────────────────────────────────────────────
 enum class LogLevel {
     INFO,
     WARNING,
@@ -18,17 +16,7 @@ enum class LogLevel {
 };
 
 
-// ─────────────────────────────────────────────
 //  CLASS: Logger
-//
-//  NEW OOP CONCEPT: Composition
-//  AuthSystem will have a Logger as a member.
-//  "AuthSystem HAS-A Logger" (not inherits from)
-//
-//  This is different from inheritance:
-//  Inheritance = "IS-A" (Admin IS-A User)
-//  Composition = "HAS-A" (AuthSystem HAS-A Logger)
-// ─────────────────────────────────────────────
 class Logger {
 private:
     string logFile;       // file where logs are saved
